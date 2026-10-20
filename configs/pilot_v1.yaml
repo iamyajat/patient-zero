@@ -1,0 +1,10 @@
+# Mid-quarter pilot (target 2026-11-03): V1 on the chain layout, benign vs adversarial.
+exp_id: pilot_v1
+dataset: hotpotqa
+n_tasks: 20
+seed: 0
+vectors: [v1]
+conditions: [benign, adversarial]
+layouts: [chain]
+models: [openai]
+concurrency: 8
