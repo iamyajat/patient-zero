@@ -12,7 +12,7 @@ import pandas as pd
 
 from ..metrics.basic import load_exp
 from .base import MessageContext
-from .llm import InstructionLLM, JudgeLLM, ProvenanceLLM
+from .llm import AnswerCheckLLM, InstructionLLM, JudgeLLM, ProvenanceLLM
 from .rules import FlipRule, InstructionRules, ProvenanceRule
 
 RULES = [InstructionRules, ProvenanceRule, FlipRule]
@@ -21,6 +21,8 @@ MONITORS = {
     "llm": [InstructionLLM, ProvenanceLLM],
     "ensemble": [*RULES, InstructionLLM, ProvenanceLLM],
     "judge": [JudgeLLM],  # single LLM-as-judge baseline
+    "answer": [AnswerCheckLLM],
+    "targeted": [*RULES, AnswerCheckLLM],  # rules for V2 instructions + an answer-only check for V1/V3
 }
 
 

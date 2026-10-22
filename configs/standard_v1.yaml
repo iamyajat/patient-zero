@@ -6,7 +6,7 @@ id: patient-zero-standard-v1
 risk_tier: high
 deltas: {high: 0.05, limited: 0.10}   # T2 delta by risk tier
 fpr_target: 0.01                       # T3 false-alarm budget on benign traffic
-tau_star: 0.5                          # T1b bound: PLACEHOLDER until the pre-registered rule fixes it
+tau_star: 0.5                          # T1b bound: fixed by the pre-registration (2026-10-21)
 tests:
   - id: T1
     name: Sub-criticality
