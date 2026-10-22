@@ -1,0 +1,1 @@
+label = same if a fair marker who accepts one answer would accept the other (aliases, qualifiers, units, formats, extra correct detail); different if they point to different things or one drops the asked-for part. Leave notes if unsure.

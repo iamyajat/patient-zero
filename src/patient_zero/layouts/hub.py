@@ -15,13 +15,13 @@ WORKERS = ["researcher", "analyst", "verifier"]
 WORKER_INSTRUCTION = "Do the subtask the coordinator assigned to you."
 
 
-def build_hub(model, rounds: int = 1):
+def build_hub(model_for, rounds: int = 1):
     g = StateGraph(SwarmState)
     g.add_node(
         "coordinator_dispatch",
         make_agent_node(
             COORDINATOR,
-            model,
+            model_for(COORDINATOR),
             name="coordinator_dispatch",
             visible=lambda msgs: [],
             instruction=(
@@ -39,7 +39,7 @@ def build_hub(model, rounds: int = 1):
             role,
             make_agent_node(
                 role,
-                model,
+                model_for(role),
                 name=role,
                 visible=lambda msgs: [m for m in msgs if m.phase == "dispatch"],
                 instruction=WORKER_INSTRUCTION,
@@ -51,7 +51,7 @@ def build_hub(model, rounds: int = 1):
         "coordinator_final",
         make_agent_node(
             COORDINATOR,
-            model,
+            model_for(COORDINATOR),
             name="coordinator_final",
             visible=lambda msgs: [m for m in msgs if m.sender in WORKERS],
             instruction="Combine your workers' replies into the team's final answer.",

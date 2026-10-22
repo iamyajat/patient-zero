@@ -7,3 +7,4 @@ runs/
 data/
 *.egg-info/
 uv.lock
+teaching_data/

@@ -1,4 +1,6 @@
-"""Chain: researcher -> analyst -> verifier -> writer. Each agent sees only the previous agent's message."""
+"""Chain: researcher -> analyst -> verifier -> writer. Each agent sees only the previous agent's message.
+
+`roles` drops agents for the verifier ablation (chain_noverifier: researcher -> analyst -> writer)."""
 
 from langgraph.graph import END, START, StateGraph
 
@@ -14,18 +16,23 @@ INSTRUCTIONS = {
 }
 
 
-def build_chain(model, rounds: int = 1):
+def _from(sender: str | None):
+    # only the predecessor's own message: if it was quarantined, nothing older leaks through instead
+    return lambda msgs: [m for m in msgs if m.sender == sender][-1:]
+
+
+def build_chain(model_for, rounds: int = 1, roles: list[str] = ROLES):
     g = StateGraph(SwarmState)
     prev = START
-    for i, role in enumerate(ROLES):
-        nxt = ROLES[i + 1 : i + 2]
+    for i, role in enumerate(roles):
+        nxt = roles[i + 1 : i + 2]
         g.add_node(
             role,
             make_agent_node(
                 role,
-                model,
+                model_for(role),
                 name=role,
-                visible=lambda msgs: msgs[-1:],
+                visible=_from(roles[i - 1] if i else None),
                 instruction=INSTRUCTIONS[role],
                 recipients=nxt,
             ),

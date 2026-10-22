@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import copy
+
 from .base import Task
 
 _SAMPLE = [
@@ -39,4 +41,4 @@ _SAMPLE = [
 
 
 def load_sample(n: int, seed: int = 0) -> list[Task]:
-    return _SAMPLE[:n]
+    return copy.deepcopy(_SAMPLE[:n])  # callers (attacks, closed-book marking) mutate tasks

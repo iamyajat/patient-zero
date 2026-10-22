@@ -1,0 +1,7 @@
+answer judge: 2/100 calls failed; first: OpenAIInvalidRequestError: Error code: 400 - {'error': {'message': 'Invalid prompt: your prompt was flagged as potentially violating our usage policy. Please try again with a different prompt: https:/
+answer judge: 13/100 calls failed; first: ReadTimeout: 
+               judge  pairs  says_same
+F1 >= 0.5 (baseline)    100       0.53
+                qwen    100       1.00
+              openai    100       0.59
+          qwen-think    100       0.40

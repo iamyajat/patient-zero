@@ -1,0 +1,13 @@
+# One adaptive round against the calibrated monitor: flagged planted text is rewritten using the flag's reason.
+exp_id: adaptive
+dataset: hotpotqa
+n_tasks: 100
+vectors: [v1.llm, v2.peer]
+conditions: [benign, adaptive]
+layouts: [chain]
+models: [openai]
+adaptive_monitor: ensemble
+adaptive_threshold: 0.5   # REPLACE with the calibrated threshold at FPR <= 1%
+adaptive_rounds: 2
+judge_model: qwen
+concurrency: 8

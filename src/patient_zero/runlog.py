@@ -20,6 +20,7 @@ class RunMeta(BaseModel):
     condition: str
     model: str
     task_id: str
+    seed_idx: int = 0
 
 
 class MessageRecord(RunMeta):
@@ -27,16 +28,20 @@ class MessageRecord(RunMeta):
     ts: float
     step: int  # LangGraph superstep; agents running in parallel share a step
     round: int
-    phase: str  # "work" | "dispatch" | "final" | "debate"
+    phase: str  # "work" | "dispatch" | "final" | "debate" | "probe" (private, never shown to other agents)
     sender: str
     recipients: list[str]
-    visible_inputs: list[str]  # ids of the messages the sender saw
+    visible_inputs: list[str]  # ids of the messages the sender saw (the provenance edges)
+    doc_inputs: list[str] = []  # ids of the documents the sender saw
     content: str
     answer: str | None  # parsed from the "ANSWER:" line, if present
     injected_into_sender: bool
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
     latency_ms: float
+    tool_calls: list[dict] = []
+    guard_score: float | None = None
+    quarantined: bool = False  # withheld from every other agent by the online guard
 
 
 class RunRecord(RunMeta):
@@ -44,10 +49,19 @@ class RunRecord(RunMeta):
     dataset: str
     question: str
     gold_answer: str
+    gold_aliases: list[str] = []
     final_answer: str | None = None
     exact_match: bool | None = None
     f1: float | None = None
     injection: dict | None = None
+    role_docs: dict[str, list[dict]] = {}  # role -> [{"id", "text"}] as each role received them
+    fingerprint: str = ""  # hash of everything that defines the swarm; a change means re-certification
+    known: bool | None = None  # model answers correctly closed-book (contamination control)
+    guard: str | None = None
+    tagging: bool = False
+    probe: bool = False
+    probe_style: str | None = None
+    extra: dict = {}  # environment-specific results (V2b: utility, attack success, suite)
     n_messages: int = 0
     prompt_tokens: int = 0
     completion_tokens: int = 0

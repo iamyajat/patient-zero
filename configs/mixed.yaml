@@ -1,0 +1,11 @@
+# Model monoculture: a mixed pipeline vs the single-model chain (compare with `primary`).
+exp_id: mixed
+dataset: hotpotqa
+n_tasks: 100
+vectors: [v1.llm]
+conditions: [benign, adversarial]
+layouts: [chain]
+models: ["mixed:researcher=openai,analyst=qwen,verifier=openai,writer=qwen"]
+closed_book: true
+concurrency: 2
+answer_judge: openai   # validated judge (prereg)

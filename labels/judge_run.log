@@ -1,0 +1,6 @@
+answer judge: 3/46 calls failed; first: OutputParserException: Invalid json output: 
+For troubleshooting, visit: https://docs.langchain.com/oss/python/langchain/errors/OUTPUT_PARSING_FAILURE 
+               judge  pairs  says_same
+F1 >= 0.5 (baseline)    100       0.59
+              openai    100       0.58
+          qwen-think    100       0.42

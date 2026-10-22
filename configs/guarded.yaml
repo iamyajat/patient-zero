@@ -1,0 +1,12 @@
+# R-hat after quarantine: the calibrated monitor runs online. Set guard_threshold from `pz calibrate` (FPR <= 1%).
+exp_id: guarded
+dataset: hotpotqa
+n_tasks: 150
+vectors: [v1.llm, v2.peer]
+conditions: [benign, adversarial]
+layouts: [chain, hub]
+models: [openai]
+guard: ensemble
+guard_threshold: null   # REQUIRED: fill in from calibration
+judge_model: qwen       # a different family from the agents
+concurrency: 4

@@ -1,0 +1,13 @@
+# V3: false consensus in debate and hub, with private-belief probes on 20% of tasks.
+exp_id: v3
+dataset: hotpotqa
+n_tasks: 100
+vectors: [v3.llm]
+conditions: [benign, adversarial]
+layouts: [mesh, hub]
+models: [openai]
+mesh_rounds: 3
+probe_fraction: 0.2
+closed_book: true
+concurrency: 8
+answer_judge: openai   # validated judge (prereg)

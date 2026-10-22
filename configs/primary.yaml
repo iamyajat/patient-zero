@@ -1,0 +1,13 @@
+# Primary comparisons: topology effect on R-hat for V1 and V2 (pre-registered). ~2,400 runs.
+exp_id: primary
+dataset: hotpotqa
+n_tasks: 150
+vectors: [v1.llm, v2.peer]
+conditions: [benign, adversarial]
+layouts: [chain, hub]
+models: [openai, qwen]
+repeats: 3
+repeat_fraction: 0.2
+closed_book: true
+concurrency: 4          # qwen runs locally; raise for openai-only runs
+answer_judge: openai   # validated judge (prereg)

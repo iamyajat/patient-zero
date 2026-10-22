@@ -1,0 +1,11 @@
+# V2b: injections in a real tool environment (AgentDojo suites in an orchestrator-worker hierarchy).
+# Run with: uv sync --extra dojo && uv run pz dojo configs/v2b_dojo.yaml
+exp_id: v2b_dojo
+suites: [slack, banking, travel, workspace]
+n_user_tasks: 10
+families: [important, infection]
+conditions: [benign, adversarial]
+layouts: [dojo_pair, dojo_hub]
+models: [openai]
+max_steps: 15
+concurrency: 4

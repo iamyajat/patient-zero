@@ -1,0 +1,10 @@
+# Pilot: V2b in the tool environment (uv sync --extra dojo). 72 runs, ~1k calls.
+exp_id: pilot_v2b
+suites: [slack, banking, travel, workspace]
+n_user_tasks: 3
+families: [important, infection]
+conditions: [benign, adversarial]
+layouts: [dojo_pair, dojo_hub]
+models: [openai]
+max_steps: 15
+concurrency: 4

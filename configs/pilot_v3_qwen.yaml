@@ -1,0 +1,12 @@
+# V3 on the open-weight model, same tasks as pilot_v3, every run probed. Local; ~5 h on this Mac.
+exp_id: pilot_v3_qwen
+dataset: hotpotqa
+n_tasks: 30
+vectors: [v3.llm]
+conditions: [benign, adversarial]
+layouts: [mesh, hub]
+mesh_rounds: 2
+probe_fraction: 1.0
+probe_style: private
+models: [qwen]
+concurrency: 2

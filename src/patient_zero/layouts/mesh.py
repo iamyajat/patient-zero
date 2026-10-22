@@ -15,7 +15,7 @@ def _visible(role: str, rnd: int):
     return lambda msgs: [m for m in msgs if m.round == rnd - 1 and m.sender != role]
 
 
-def build_mesh(model, rounds: int = 2):
+def build_mesh(model_for, rounds: int = 2):
     g = StateGraph(SwarmState)
     prev: list[str] = []
     for r in range(rounds):
@@ -25,7 +25,7 @@ def build_mesh(model, rounds: int = 2):
                 name,
                 make_agent_node(
                     role,
-                    model,
+                    model_for(role),
                     name=name,
                     visible=_visible(role, r),
                     instruction=FIRST if r == 0 else LATER,

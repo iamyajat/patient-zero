@@ -1,0 +1,13 @@
+# Pilot: V3 plus the probe-noise control. Every run is probed, so the benign public-vs-private gap is the baseline.
+# If the benign gap is over 10%, rerun with probe_style: neutral and compare.
+exp_id: pilot_v3
+dataset: hotpotqa
+n_tasks: 30
+vectors: [v3.llm]
+conditions: [benign, adversarial]
+layouts: [mesh, hub]
+mesh_rounds: 2
+probe_fraction: 1.0
+probe_style: private
+models: [openai]
+concurrency: 8

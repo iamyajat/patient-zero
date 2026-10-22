@@ -1,0 +1,10 @@
+# Pilot: do the stronger V2a families get off the floor? Adversarial only; the benign v2 runs come from pilot_nov3
+# (audit both: `pz audit runs/pilot_v2 runs/pilot_nov3`).
+exp_id: pilot_v2
+dataset: hotpotqa
+n_tasks: 30
+vectors: [v2.important, v2.peer]
+conditions: [adversarial]
+layouts: [chain, hub]
+models: [openai]
+concurrency: 8

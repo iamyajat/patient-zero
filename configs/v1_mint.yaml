@@ -1,0 +1,10 @@
+# V1 with realistic, stylistically varied misinformation (MINT, CWQ questions, verified passages only).
+exp_id: v1_mint
+vectors: [v1.mint]
+conditions: [benign, adversarial]
+layouts: [chain, hub]
+models: [openai]
+n_tasks: 150
+closed_book: true
+concurrency: 8
+answer_judge: openai   # validated judge (prereg)

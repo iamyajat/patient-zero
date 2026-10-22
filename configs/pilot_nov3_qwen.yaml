@@ -1,0 +1,11 @@
+# The pilot on the open-weight model, same 30 tasks (seed 0). Needs Ollama with qwen3:8b.
+exp_id: pilot_nov3_qwen
+dataset: hotpotqa
+n_tasks: 30
+vectors: [v1.template, v1.llm, v2.infection, v2.important, v2.peer]
+conditions: [benign, adversarial]
+layouts: [chain, hub]
+models: [qwen]
+closed_book: true
+answer_judge: qwen
+concurrency: 2

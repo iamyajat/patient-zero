@@ -1,0 +1,10 @@
+# LLM Tagging baseline defense (Lee & Tiwari 2024): relayed messages are marked with their provenance.
+exp_id: tagging
+dataset: hotpotqa
+n_tasks: 150
+vectors: [v1.llm, v2.peer]
+conditions: [benign, adversarial]
+layouts: [chain, hub]
+models: [openai]
+tagging: true
+concurrency: 8

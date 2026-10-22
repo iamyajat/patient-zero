@@ -19,10 +19,12 @@ def test_grid_logs_and_resumes(cfg, tasks):
     assert len(logger.runs_path.read_text().splitlines()) == len(runs)
 
 
-def test_adversarial_marker_spreads_with_echo_model(cfg, tasks):
-    c = cfg(conditions=["benign", "adversarial"], layouts=["chain"])
+def test_adversarial_payload_spreads_with_echo_model(cfg, tasks):
+    from patient_zero.metrics.contagion import contagion_table, load_contagion
+
+    c = cfg(vectors=["v2.infection"], conditions=["benign", "adversarial"], layouts=["chain"])
     asyncio.run(run_grid(c, tasks))
-    s = summarize(c.exp_dir).set_index("condition")
-    assert s.loc["adversarial", "adoption"] == 1.0  # echo model repeats everything it sees
-    assert s.loc["benign", "adoption"] != s.loc["benign", "adoption"]  # NaN: nothing planted
-    assert s.loc["adversarial", "n"] == 3
+    t = contagion_table(load_contagion(c.exp_dir), ["condition"]).set_index("condition")
+    assert t.loc["adversarial", "attack_rate"] == 1.0 and t.loc["adversarial", "tau"] == 1.0  # echo repeats everything
+    assert t.loc["benign", "attack_rate"] != t.loc["benign", "attack_rate"]  # NaN: nothing planted
+    assert summarize(c.exp_dir).set_index("condition").loc["adversarial", "n"] == 3

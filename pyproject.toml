@@ -15,10 +15,19 @@ dependencies = [
     "typer>=0.12",
     "pandas>=2.2",
     "python-dotenv>=1.0",
+    "statsmodels>=0.15.0",
+    "scipy>=1.18.1",
+    "matplotlib>=3.11.2",
+    "tabulate>=0.10.0",
 ]
 
 [project.scripts]
 pz = "patient_zero.cli:app"
+
+[project.optional-dependencies]
+dojo = [
+    "agentdojo>=0.1.35",
+]
 
 [dependency-groups]
 dev = ["pytest>=8", "pytest-asyncio>=0.24"]

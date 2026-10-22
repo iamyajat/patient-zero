@@ -1,0 +1,11 @@
+# Pilot: is each attack strong enough? Adoption and relay should sit between floor and ceiling (~0.1-0.9).
+# Its variance feeds `pz power` for the primary sample size.
+exp_id: pilot_nov3
+dataset: hotpotqa
+n_tasks: 30
+vectors: [v1.template, v1.llm, v2.infection]
+conditions: [benign, adversarial]
+layouts: [chain, hub]
+models: [openai]
+closed_book: true
+concurrency: 8

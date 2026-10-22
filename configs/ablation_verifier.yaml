@@ -1,0 +1,11 @@
+# Does a verifier role reduce spread? Chain with vs without the verifier, under attack only.
+exp_id: ablation_verifier
+dataset: hotpotqa
+n_tasks: 100
+vectors: [v1.llm]
+conditions: [adversarial]
+layouts: [chain, chain_noverifier]
+models: [openai]
+closed_book: true
+concurrency: 8
+answer_judge: openai   # validated judge (prereg)
