@@ -56,10 +56,17 @@ def run(
 
 
 @app.command()
-def grid(config: Path):
+def grid(config: Path, only_models: str = typer.Option(None, help="run just these models from the config (comma-separated); "
+                                                                  "the config file and run ids are unchanged, so a frozen grid can run in parts")):
     """Run every cell of a YAML grid config. Rerunning resumes where it stopped."""
     load_dotenv()
     cfg = GridConfig.from_yaml(config)
+    if only_models:
+        keep = [m.strip() for m in only_models.split(",")]
+        unknown = set(keep) - set(cfg.models)
+        if unknown:
+            raise typer.BadParameter(f"not in the config: {sorted(unknown)}")
+        cfg = cfg.model_copy(update={"models": keep})
     asyncio.run(run_grid(cfg))
     _report(cfg.exp_dir)
 

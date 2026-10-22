@@ -175,3 +175,17 @@ after the freeze.
 | chain / qwen3:8b (`qwen`) | 7532f1c2252db5d0 |
 | hub / gpt-6-luna (`openai`) | b91e624f79426246 |
 | hub / qwen3:8b (`qwen`) | ba5bc02a52504f49 |
+
+## Amendments
+Changes after the freeze at `4d4b9c3`. Each is dated, gives its reason, and states what data existed when it was made.
+Frozen configs are never edited: an amendment adds a new config and records its hash.
+
+**Amendment 1, 2026-10-22: V3 also on qwen3:8b.**
+- Change: adds `configs/v3_qwen.yaml` (sha256 2a37b1b2f13358ba). It is identical to the frozen `v3.yaml` except for
+  `exp_id`, `models: [qwen]` and `concurrency`. H3 and H4 are tested on both models; the analysis is unchanged.
+- Reason: the frozen V3 grid runs gpt-6-luna only. In the pilots, gpt-6-luna barely reacted to a confident adversary
+  (planted answer final in 7% of mesh runs), while qwen did (17%, benign 0%). Without qwen, the confirmatory V3 study
+  could not test H3 where an effect is plausible.
+- Data at the time: pilot V3 data on both models (`pilot_v3`, `pilot_v3_qwen`). No confirmatory V3 data on either
+  model; `configs/v3.yaml` had not been run.
+- Swarm fingerprints: mesh / qwen3:8b d48230434494e2bf, hub / qwen3:8b ba5bc02a52504f49.
