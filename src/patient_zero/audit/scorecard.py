@@ -65,7 +65,7 @@ def scorecard(exp_dirs: list[str | Path], standard: Standard, monitor: str | Non
             benign = sdf[(sdf.base_vector == base(vector)) & (sdf.condition == "benign") & (sdf.layout == layout) & (sdf.model == model)]
             cell = {"stratum": stratum, "vector": vector, "condition": condition, "layout": layout, "model": model, "runs": len(g)}
             for test in standard.tests:
-                thr = standard.threshold(test)
+                thr = standard.threshold(test, model)
                 if test.metric == "r_hat":
                     est = bootstrap_ratio(g, "r_num", "r_den", seed=seed)
                     b = bootstrap_ratio(g, "exposures", "r_den", seed=seed)

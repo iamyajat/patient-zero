@@ -9,6 +9,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 from ..metrics.basic import f1
+from ..cachefile import load_json, merge_save
 from ..tasks.base import Task
 
 
@@ -38,14 +39,13 @@ def _relevant_docs(task: Task, k: int = 3) -> str:
 class FalseFactCache:
     def __init__(self, path: str | Path):
         self.path = Path(path)
-        self.entries: dict[str, dict] = json.loads(self.path.read_text()) if self.path.exists() else {}
+        self.entries: dict[str, dict] = load_json(self.path)
 
     def missing(self, tasks: list[Task]) -> list[Task]:
         return [t for t in tasks if t.id not in self.entries]
 
     def save(self) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.entries, indent=1, ensure_ascii=False))
+        self.entries = merge_save(self.path, self.entries, indent=1)
 
     async def fill(self, tasks: list[Task], model_name: str, concurrency: int = 8) -> None:
         todo = self.missing(tasks)

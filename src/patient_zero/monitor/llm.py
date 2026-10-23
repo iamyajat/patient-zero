@@ -10,6 +10,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
+from ..cachefile import load_json, merge_save
 from .base import MessageContext
 
 DOC_CHARS, MSG_CHARS = 6000, 3000
@@ -22,12 +23,11 @@ class JudgeCache:
 
     def __init__(self, path: Path):
         self.path = path
-        self.data: dict[str, dict] = json.loads(path.read_text()) if path.exists() else {}
+        self.data: dict[str, dict] = load_json(path)
         self.dirty = 0
 
     def save(self) -> None:
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.data))
+        self.data = merge_save(self.path, self.data)
         self.dirty = 0
 
 class LLMDetector:

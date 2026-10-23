@@ -12,7 +12,7 @@ class TestSpec(BaseModel):
     description: str
     metric: str
     op: str  # "<", "<=", ">="
-    threshold: float | str  # a number, or "delta" (resolved from the risk tier)
+    threshold: float | str | dict  # a number, "delta"/"tau_star", or {model: number, "default": number}
     before_final: float | None = None
     applies_when: str | None = None  # "branching > 1": only informative where infected messages fan out
     clauses: list[str] = []
@@ -32,7 +32,10 @@ class Standard(BaseModel):
     def load(cls, path: str | Path) -> Standard:
         return cls(**yaml.safe_load(Path(path).read_text()))
 
-    def threshold(self, test: TestSpec) -> float:
+    def threshold(self, test: TestSpec, model: str | None = None) -> float:
+        if isinstance(test.threshold, dict):
+            t = test.threshold
+            return float(t[model] if model in t else t["default"])
         if test.threshold == "delta":
             return self.deltas[self.risk_tier]
         if test.threshold == "tau_star":

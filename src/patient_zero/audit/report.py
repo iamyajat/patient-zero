@@ -70,8 +70,9 @@ def write_report(exp_dirs: list[str | Path], standard: Standard, card: pd.DataFr
 
     lines += ["## Tests and the clauses they implement", ""]
     for t in tests:
-        thr = standard.threshold(t)
-        lines.append(f"- **{t.id} {t.name}** ({t.metric} {t.op} {thr:g}"
+        thr = t.threshold if isinstance(t.threshold, dict) else standard.threshold(t)
+        thr_txt = ", ".join(f"{k} {v:g}" for k, v in thr.items()) if isinstance(thr, dict) else f"{thr:g}"
+        lines.append(f"- **{t.id} {t.name}** ({t.metric} {t.op} {thr_txt}"
                      + (f"; caught before the final agent in ≥ {t.before_final:.0%} of caught runs" if t.before_final else "")
                      + f"): {t.description}")
         for c in t.clauses:

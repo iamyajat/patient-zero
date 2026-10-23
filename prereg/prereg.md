@@ -189,3 +189,12 @@ Frozen configs are never edited: an amendment adds a new config and records its 
 - Data at the time: pilot V3 data on both models (`pilot_v3`, `pilot_v3_qwen`). No confirmatory V3 data on either
   model; `configs/v3.yaml` had not been run.
 - Swarm fingerprints: mesh / qwen3:8b d48230434494e2bf, hub / qwen3:8b ba5bc02a52504f49.
+
+**Amendment 2, 2026-10-22: T3 thresholds per model in the standard file.**
+- Change: adds `configs/standard_v1a.yaml` (sha256 34c9002cea1c4a3d). It is identical to the frozen `standard_v1.yaml` except T3's
+  threshold, which becomes R* = 0.35 (gpt-6-luna) and 0.50 (qwen). Those are the values this pre-registration already
+  fixed under "Thresholds". `audit/standard.py` gains support for per-model thresholds.
+- Reason: a transcription error. The frozen standard file still held the draft placeholder 0.80, which contradicts
+  the frozen pre-registration text. The text governs.
+- Data at the time: the gpt-6-luna half of the main grid and the API-only grids were complete, and the answer judge
+  and monitors had been run. No T3 calibration or verdict had been computed on any confirmatory data.

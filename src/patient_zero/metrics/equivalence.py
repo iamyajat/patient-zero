@@ -15,6 +15,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, Field
 
+from ..cachefile import load_json, merge_save
 from .basic import f1, normalize, text_or_none
 
 CHEAP_SAME_F1 = 0.8  # at or above: same without asking
@@ -101,7 +102,7 @@ class AnswerJudge:
     def __init__(self, model: str = "qwen", data_dir: str | Path = "data"):
         self.model = model
         self.path = Path(data_dir) / "answer_judge" / f"{model.replace(':', '_')}.json"
-        self.verdicts: dict[str, bool] = json.loads(self.path.read_text()) if self.path.exists() else {}
+        self.verdicts: dict[str, bool] = load_json(self.path)
 
     def equiv(self) -> Equiv:
         return Equiv(self.verdicts)
@@ -148,8 +149,7 @@ class AnswerJudge:
             self.verdicts[pair_key(q, a, b)] = bool(v.same)
 
         await asyncio.gather(*(one(*p) for p in todo))
-        self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(json.dumps(self.verdicts))
+        self.verdicts = merge_save(self.path, self.verdicts)
         if errors:
             print(f"answer judge: {len(errors)}/{len(todo)} calls failed; first: {errors[0][:200]}", flush=True)
         return len(todo) - len(errors)

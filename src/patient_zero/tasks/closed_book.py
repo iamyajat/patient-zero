@@ -11,6 +11,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 from ..metrics.basic import best_f1
 from ..metrics.equivalence import F1_EQUIV, Equiv
 from ..roles import ANSWER_LINE
+from ..cachefile import load_json, merge_save
 from .base import Task
 
 KNOWN_F1 = 0.8
@@ -23,7 +24,7 @@ def cache_path(data_dir: str | Path, model_name: str) -> Path:
 
 async def closed_book(tasks: list[Task], model_name: str, data_dir: str | Path = "data", concurrency: int = 8) -> dict[str, dict]:
     path = cache_path(data_dir, model_name)
-    results: dict[str, dict] = json.loads(path.read_text()) if path.exists() else {}
+    results: dict[str, dict] = load_json(path)
     todo = [t for t in tasks if t.id not in results]
     if todo:
         from ..agent import parse_answer
@@ -46,8 +47,7 @@ async def closed_book(tasks: list[Task], model_name: str, data_dir: str | Path =
         await asyncio.gather(*(one(t) for t in todo))
         if errors:
             print(f"closed-book: {len(errors)}/{len(todo)} calls failed for {model_name}; first: {errors[0][:200]}", flush=True)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(results, indent=1, ensure_ascii=False))
+        results = merge_save(path, results, indent=1)
     return results
 
 
