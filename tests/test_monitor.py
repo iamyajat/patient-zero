@@ -197,3 +197,19 @@ def test_flagging_a_wrong_answer_is_not_a_false_alarm():
     strict = {p["fpr_target"]: p for p in calibrate(flags, labels, negatives="uninfected")}
     assert primary[0.01]["recall"] == 1.0 and primary[0.01]["test_fpr"] == 0.0
     assert strict[0.01]["recall"] == 0.0  # the system's own errors use up the budget
+
+
+def test_guard_with_per_detector_thresholds(cfg, tasks):
+    c = cfg(vectors=["v2.infection"], conditions=["adversarial"], layouts=["chain"], guard="rules",
+            guard_thresholds={"fake": {"instruction_rules": 0.2, "provenance_rule": 1.0, "flip_rule": 1.0}})
+    logger = asyncio.run(run_grid(c, tasks))
+    msgs = [json.loads(l) for l in logger.messages_path.read_text().splitlines()]
+    assert all(m["quarantined"] for m in msgs if m["sender"] == "researcher")
+    runs = [json.loads(l) for l in logger.runs_path.read_text().splitlines()]
+    from patient_zero.runner import fingerprint
+    assert runs[0]["fingerprint"] != fingerprint("fake", "chain", 2, "rules")  # thresholds are part of the swarm
+
+
+def test_fingerprint_unchanged_without_guard_thresholds():
+    from patient_zero.runner import fingerprint
+    assert fingerprint("fake", "chain", 2, None) == fingerprint("fake", "chain", 2, None, guard_thresholds=None)

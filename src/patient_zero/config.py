@@ -33,6 +33,8 @@ class GridConfig(BaseModel):
     probe_style: str = "private"  # "private" (Huang et al. wording) | "neutral" (re-ask; control for wording effects)
     guard: str | None = None  # online guard: a monitor name (rules | llm | ensemble | judge); quarantines flagged messages
     guard_threshold: float | None = None  # from `pz calibrate` at the target false-alarm rate
+    guard_thresholds: dict[str, dict[str, float]] | None = None  # {model: {detector: threshold}} (union calibration)
+    adaptive_thresholds: dict[str, float] | None = None  # {detector: threshold}: rewrite until none would fire
     judge_model: str = "openai"  # LLM detectors; use a different family from the agents for the paper's runs
     tagging: bool = False  # LLM Tagging baseline defense
     adaptive_monitor: str = "rules"  # condition "adaptive": rewrite planted text this monitor flags

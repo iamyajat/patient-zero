@@ -55,7 +55,7 @@ def layout_roles(layout: str) -> list[str]:
 
 
 def fingerprint(model_spec: str, layout: str, rounds: int, guard: str | None, tagging: bool = False,
-                probe_style: str = "private") -> str:
+                probe_style: str = "private", guard_thresholds: dict | None = None) -> str:
     """Hash of everything that defines the swarm under audit. Any change means it must be re-certified."""
     sources = {f: (PKG / f).read_text() for f in ["roles.py", "agent.py", f"layouts/{LAYOUT_MODULES[layout]}.py"]}
     payload = {
@@ -67,6 +67,8 @@ def fingerprint(model_spec: str, layout: str, rounds: int, guard: str | None, ta
         "probe_style": probe_style,
         "sources": sources,
     }
+    if guard_thresholds:  # only when set, so swarms without per-detector guards keep their fingerprints
+        payload["guard_thresholds"] = guard_thresholds
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()[:16]
 
 
@@ -76,7 +78,7 @@ def build_attack(cfg: GridConfig, vector: str, tasks: list[Task]) -> Attack:
 
 def build_adaptive(cfg: GridConfig, vector: str, tasks: list[Task]) -> AdaptiveAttack:
     return AdaptiveAttack(build_attack(cfg, vector, tasks), cfg.adaptive_monitor, cfg.adaptive_threshold, cfg.adaptive_rounds,
-                          cfg.attack_model, cfg.judge_model, cfg.data_dir, vector)
+                          cfg.attack_model, cfg.judge_model, cfg.data_dir, vector, cfg.adaptive_thresholds)
 
 
 ATTACKED = ("adversarial", "adaptive")
@@ -262,22 +264,27 @@ async def run_grid(cfg: GridConfig, tasks: list[Task] | None = None) -> JsonlLog
 
     done = logger.completed_run_ids()
     specs = [s for s in expand_grid(cfg, tasks_by_vector, attacks) if s.meta.run_id not in done]
-    guard = make_guard(cfg.guard, cfg.guard_threshold, cfg.judge_model, cfg.data_dir)
+    def guard_for(model: str):
+        th = (cfg.guard_thresholds or {}).get(model)
+        return make_guard(cfg.guard, cfg.guard_threshold, cfg.judge_model, cfg.data_dir, th)
+
+    guards = {m: guard_for(m) for m in cfg.models}
     graphs: dict[tuple, object] = {}
     fps: dict[tuple, str] = {}
     for s in specs:
         key = (s.meta.layout, s.meta.model, s.meta.seed_idx)
         if key not in graphs:
             graphs[key] = LAYOUTS[s.meta.layout](model_for(s.meta.model, s.meta.seed_idx), rounds=cfg.mesh_rounds)
-            fps[key] = fingerprint(s.meta.model, s.meta.layout, cfg.mesh_rounds, cfg.guard, cfg.tagging, cfg.probe_style)
+            fps[key] = fingerprint(s.meta.model, s.meta.layout, cfg.mesh_rounds, cfg.guard, cfg.tagging, cfg.probe_style,
+                                   (cfg.guard_thresholds or {}).get(s.meta.model))
     sem = asyncio.Semaphore(cfg.concurrency)
     counter = {"done": 0, "errors": 0}
 
     async def _run(spec: RunSpec):
         key = (spec.meta.layout, spec.meta.model, spec.meta.seed_idx)
         async with sem:
-            record, messages = await run_one(spec, graphs[key], cfg.doc_roles, guard, fps[key], cfg.tagging, cfg.probe_style,
-                                             cfg.run_timeout)
+            record, messages = await run_one(spec, graphs[key], cfg.doc_roles, guards[spec.meta.model], fps[key], cfg.tagging,
+                                             cfg.probe_style, cfg.run_timeout)
         logger.write_run(record, messages)
         counter["done"] += 1
         counter["errors"] += record.error is not None

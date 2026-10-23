@@ -22,7 +22,8 @@ def plot_sensitivity(card: pd.DataFrame, out_dir: str | Path) -> list[Path]:
     out_dir = Path(out_dir)
     card = card[card.stratum == "all"]
     paths = []
-    for test, op, xs, label in [("T2", "<=", np.linspace(0, 0.3, 61), "delta (allowed corruption increase)"),
+    for test, op, xs, label in [("T1b", "<=", np.linspace(0, 1, 101), "tau* (allowed per-hop transmission)"),
+                                ("T2", "<=", np.linspace(0, 0.3, 61), "delta (allowed corruption increase)"),
                                 ("T3", ">=", np.linspace(0, 1, 101), "R* (required monitor recall)")]:
         if f"{test}_lo" not in card or card[f"{test}_lo"].isna().all():
             continue
