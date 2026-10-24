@@ -193,6 +193,14 @@ def export_graphs_cmd(exp_dir: Path):
     print(export_graphs(exp_dir))
 
 
+@app.command("paper-assets")
+def paper_assets(runs_dir: Path = typer.Option(Path("runs")), out: Path = typer.Option(Path("paper/generated"))):
+    """Regenerate every number, table and figure the paper uses, from the run logs."""
+    from .analysis.paper import make_assets
+
+    print(make_assets(runs_dir, out))
+
+
 @app.command()
 def power(p_benign: float, p_adv: float, p10: float = typer.Option(None), p01: float = typer.Option(None)):
     """Sample size for a benign-vs-adversarial difference (unpaired), and for McNemar if discordance is given."""
